@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Thiệp mời sinh nhật</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      overflow: hidden;
+      transition: background 0.8s;
+      background: white;
+    }
+    #container {
+      z-index: 10;
+    }
+    h1 {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    #yesBtn {
+      background: #4CAF50;
+      color: white;
+    }
+    #noBtn {
+      background: #F44336;
+      color: white;
+      position: absolute;
+    }
+    #comment {
+      margin-top: 20px;
+      font-size: 18px;
+      font-style: italic;
+    }
+    canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="fireworks"></canvas>
+  <div id="container">
+    <h1 id="question">Whatsup bro, cảm ơn bro vì đã nhấn vào link nhá</h1>
+    <button id="yesBtn" onclick="nextStep()">Tiếp tục</button>
+  </div>
+
+  <script>
+    let step = 0;
+    let colors = ["#ffffff","#ffcccc","#ccffcc","#ccccff","#ffffcc","#ffccff","#ccffff"];
+    let comments = {
+      1: "Bro ngầu điên",
+      2: "mì tôm, bò khô, radio",
+      3: "bulking đến chết",
+      4: "anh em mình cứ thế thôi hẹ hẹ hẹ"
+    };
+
+    function nextStep(choice) {
+      step++;
+      document.body.style.background = colors[step % colors.length];
+      let question = document.getElementById("question");
+      let yesBtn = document.getElementById("yesBtn");
+      let noBtn = document.getElementById("noBtn");
+      let comment = document.getElementById("comment");
+
+      if(noBtn) noBtn.remove();
+      if(comment) comment.remove();
+
+      if(step === 1) {
+        question.textContent = "Xem phim ma được không bro?";
+        yesBtn.textContent = "Có";
+        yesBtn.onclick = () => showComment(1);
+        createNoBtn("Không", () => moveNoBtn());
+      }
+      else if(step === 2) {
+        question.textContent = "Bro có muốn làm ca sĩ không?";
+        yesBtn.textContent = "Có";
+        yesBtn.onclick = () => showComment(2);
+        createNoBtn("Không", () => growYes());
+      }
+      else if(step === 3) {
+        question.textContent = "Đi mlem mlem gì đó nha bro?";
+        yesBtn.textContent = "Có";
+        yesBtn.onclick = () => showComment(3);
+        createNoBtn("Không", () => changeNoText());
+      }
+      else if(step === 4) {
+        question.textContent = "Gắp gấu hoặc đi chơi máy đồng xu ở Vincom hay Emart đêêêê?";
+        yesBtn.textContent = "Triển luôn bro";
+        yesBtn.onclick = () => showComment(4);
+        createNoBtn("Không", () => hideNo());
+      }
+      else if(step === 5) {
+        question.textContent = "Đi sinh nhật 18+ của tui nha homies";
+        yesBtn.textContent = "Có";
+        yesBtn.onclick = () => swapButtons();
+        createNoBtn("Không", () => swapButtons());
+      }
+      else if(step === 6) {
+        question.textContent = "Thư mời chính thức";
+        yesBtn.textContent = "Tiếp tục";
+        yesBtn.onclick = () => finalInvite();
+      }
+      else if(step === 7) {
+        question.innerHTML = 
+          "🎉 Quang Anh mời bạn tham dự sinh nhật 🎉<br><br>" +
+          "📅 Ngày: 30/08/2025 — ⏰ 10h30 sáng<br>" +
+          "🎤 Hoạt động: Escape room, Đi ăn + cà phê, Xem phim, Đi chơi...<br><br>" +
+          "🙏 Cảm ơn vì sự có mặt của bạn!";
+        yesBtn.style.display = "none";
+      }
+    }
+
+    function createNoBtn(text, action) {
+      let noBtn = document.createElement("button");
+      noBtn.id = "noBtn";
+      noBtn.textContent = text;
+      noBtn.onclick = action;
+      document.getElementById("container").appendChild(noBtn);
+      moveNoBtn();
+    }
+
+    function moveNoBtn() {
+      let noBtn = document.getElementById("noBtn");
+      if(noBtn) {
+        let x = Math.random() * (window.innerWidth - 100);
+        let y = Math.random() * (window.innerHeight - 100);
+        noBtn.style.left = x + "px";
+        noBtn.style.top = y + "px";
+      }
+    }
+
+    function growYes() {
+      let yesBtn = document.getElementById("yesBtn");
+      let size = yesBtn.style.transform.match(/scale\(([^)]+)\)/);
+      let current = size ? parseFloat(size[1]) : 1;
+      yesBtn.style.transform = `scale(${current + 0.2})`;
+    }
+
+    function changeNoText() {
+      let noBtn = document.getElementById("noBtn");
+      let phrases = ["bro chọn sai rồi","nhai gì đó đi","sai quá sai","thử lại coi"];
+      noBtn.textContent = phrases[Math.floor(Math.random()*phrases.length)];
+    }
+
+    function hideNo() {
+      let noBtn = document.getElementById("noBtn");
+      if(noBtn) noBtn.style.display = "none";
+    }
+
+    function swapButtons() {
+      let yesBtn = document.getElementById("yesBtn");
+      let noBtn = document.getElementById("noBtn");
+      if(yesBtn && noBtn) {
+        let temp = yesBtn.textContent;
+        yesBtn.textContent = noBtn.textContent;
+        noBtn.textContent = temp;
+      }
+    }
+
+    function showComment(idx) {
+      let c = document.createElement("div");
+      c.id = "comment";
+      c.textContent = comments[idx];
+      document.getElementById("container").appendChild(c);
+      document.getElementById("yesBtn").onclick = () => nextStep();
+    }
+
+    function finalInvite() {
+      nextStep();
+    }
+
+    // 🎆 Fireworks
+    const canvas = document.getElementById("fireworks");
+    const ctx = canvas.getContext("2d");
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+    let particles = [];
+
+    function random(min, max){return Math.random()*(max-min)+min;}
+    class Particle {
+      constructor(x,y,color){
+        this.x=x;this.y=y;this.color=color;
+        this.radius=2;
+        this.velX=random(-3,3);
+        this.velY=random(-3,3);
+        this.alpha=1;
+      }
+      update(){
+        this.x+=this.velX;
+        this.y+=this.velY;
+        this.alpha-=0.02;
+      }
+      draw(){
+        ctx.globalAlpha=this.alpha;
+        ctx.beginPath();
+        ctx.arc(this.x,this.y,this.radius,0,Math.PI*2);
+        ctx.fillStyle=this.color;
+        ctx.fill();
+        ctx.globalAlpha=1;
+      }
+    }
+    function animate(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      if(Math.random()<0.05){
+        let x=random(0,canvas.width);
+        let y=random(0,canvas.height/2);
+        let color=`hsl(${random(0,360)},100%,50%)`;
+        for(let i=0;i<50;i++) particles.push(new Particle(x,y,color));
+      }
+      particles.forEach((p,i)=>{
+        p.update();p.draw();
+        if(p.alpha<=0) particles.splice(i,1);
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+    window.onresize=()=>{canvas.width=innerWidth;canvas.height=innerHeight;}
+  </script>
+</body>
+</html>
